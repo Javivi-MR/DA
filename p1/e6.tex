@@ -1,0 +1,98 @@
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Voraz total}]
+void DEF_LIB_EXPORTED placeDefenses(bool** freeCells, int nCellsWidth, 
+			int nCellsHeight, float mapWidth, float mapHeight
+            , std::list<Object*> obstacles, std::list<Defense*> defenses) {
+	
+    float cellWidth = mapWidth / nCellsWidth; //Ancho de celda
+    float cellHeight = mapHeight / nCellsHeight; //Altura de celda
+    int numDefensasColocadas = 0; //Numero de defensas colocadas
+
+	//Definicion de variables que usaremos mas adelante:
+	//Para la lista de candidatos usaremos una lista la 
+	//cual almacenara las celdas de manera ordenada conforme al valor de la celda
+	std::list<Celda> Celdas;
+	//Definimos una celda auxiliar para poder seleccionar un candidato de la lista
+	Celda auxiliar(0,0,0);
+	//definimos un iterador de la lista de defensas para poder colocar las defensas
+	List<Defense*>::iterator currentDefense = defenses.begin();
+		
+	//Inicializamos la lista de candidatos para colocar el centro de extraccion
+	for(int i = 0 ; i < nCellsWidth ; i++)
+	{
+		for(int j = 0 ; j < nCellsHeight ; j++)
+		{
+			//insertamos todas las celdas en la lista de candidatos. Para poder 
+			//ordenarla luego usaremos el metodo sort
+			Celdas.push_front(Celda(i,j,cellValueExtrationCenter(i,j
+			,freeCells,cellWidth,cellHeight,nCellsWidth,nCellsHeight)));
+		}
+	}
+	Celdas.sort(); //Se realiza la ordenacion (al final de 
+	//las listas estan las mejores celdas)
+
+	//Comenzaremos colocando el centro de extraccion de minerales 
+	//(primera posicion de defensas)
+	//Definimos una variable que nos indicara true cuando 
+	//el centro de extraccion sea colocado
+	bool CentroColocado = false; 
+	// Mientras que hayan candidatos(celdas)disponibles 
+	//y el centro no haya sido colocado
+	while(!Celdas.empty() && !CentroColocado) 
+	{
+		auxiliar = Celdas.back(); //Guardamos el mejor candidato posible
+		Celdas.pop_back(); //lo eliminamos de la lista de candidatos
+		//Si la celda elegida es factible
+		if(EsFactible(auxiliar.row,auxiliar.col,currentDefense,nCellsWidth,
+		nCellsHeight,mapWidth,mapHeight,
+		obstacles,defenses,numDefensasColocadas))  
+		{
+			//le damos a la primera defensa (Centro de Extraccion) 
+			//la posicion de la celda elegida
+			(*currentDefense)->position = 
+			cellCenterToPosition(auxiliar.row,auxiliar.col,
+			cellWidth,cellHeight); 
+			//El centro ha sido colocado
+			CentroColocado = true; 
+			//numero de defensas es 1
+			numDefensasColocadas++; 
+		}
+	}
+	
+	//Actualizamos el valor de las celdas para que sea el mejor valor para las celdas
+	cellValueDefenses(Celdas,currentDefense,cellWidth,cellHeight); 
+	//Se realiza la ordenacion (al final de las listas estan las mejores celdas
+	Celdas.sort();
+	
+	//pasamos a la siguiente defensa
+	currentDefense++; 
+
+	//Continuamos con el colocado de las defensas restantes
+	//establecemos un numero maximo de intentos
+	int maxAttemps = 1000;
+	//Mientras que haya defensas por colocar y haya candidatos disponibles 
+	//y el numero de intentos sea superior a 0
+    while(currentDefense != defenses.end() && !Celdas.empty() && maxAttemps > 0) 
+    {	 
+		//seleccionamos el mejor candidato disponible
+		auxiliar = Celdas.back(); 
+		//lo eliminamos de la lista de candidatos
+		Celdas.pop_back();
+		//Si la celda elegida es factible
+    	if(EsFactible(auxiliar.row,auxiliar.col,currentDefense,nCellsWidth,
+	nCellsHeight,mapWidth,mapHeight,obstacles,defenses,numDefensasColocadas)) 
+    	{
+			//asignamos a la defensa la posicion de la celda elegida
+        	(*currentDefense)->position = 
+		cellCenterToPosition(auxiliar.row,
+		auxiliar.col,cellWidth,cellHeight); 
+			//pasamos a la siguiente defensa
+			currentDefense++; 
+			//defensa colocada +1
+			numDefensasColocadas++; 
+    	}
+		//restamos 1 al numero de intentos
+		maxAttemps--; 
+    }
+
+	
+\end{lstlisting}

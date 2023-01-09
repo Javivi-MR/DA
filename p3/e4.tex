@@ -1,0 +1,27 @@
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Algoritmo Caja Negra}]
+void CajaNegraFusion(std::vector<Celda>& v)
+{
+	ordenacionFusion(v); //realizamos ordenacion
+	bool bienordenado = true;
+	for(int i = 0; i < v.size()-1 ; i++)
+	{
+		if(v[i+1] < v[i])
+		{
+			bienordenado = false;
+		}
+	}
+}
+
+void CajaNegraQuickSort(std::vector<Celda>& v)
+{
+	Quicksort(v,0,v.size()-1);
+	bool bienordenado = true;
+	for(int i = 0; i < v.size()-1 ; i++)
+	{
+		if(v[i+1] < v[i])
+		{
+			bienordenado = false;
+		}
+	}
+}
+\end{lstlisting}

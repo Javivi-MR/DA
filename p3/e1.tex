@@ -1,0 +1,23 @@
+La estructura utilizada sera un vector que contendra cada una de las celdas del mapa. Ademas una celda contendra su posicion ademas de la valoración para dicha celda.
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Estructura de Celda}]
+struct Celda
+{
+	int row,col;
+	float valor;
+	Celda(int r, int c, int v): row(r), col(c), valor(v) {}
+	Celda(): row(0),col(0),valor(0) {}
+};
+\end{lstlisting}
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Vector de Celdas}]
+	std::vector<Celda> Celdas;
+	for(int i = 0 ; i < nCellsWidth ; i++)
+	{
+		for(int j = 0 ; j < nCellsHeight ; j++)
+		{
+			//insertamos todas las celdas en la lista de candidatos. Para poder ordenarla luego usaremos el metodo sort
+			Celdas.push_back(Celda(i,j,defaultCellValue(i,j,freeCells,nCellsWidth,nCellsHeight,mapWidth,mapHeight,obstacles,defenses)));
+		}
+	}
+\end{lstlisting}

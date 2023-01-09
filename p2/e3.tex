@@ -1,0 +1,69 @@
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Algoritmo para rellenar la tabla de subproblemas resueltos}]
+void DEF_LIB_EXPORTED selectDefenses(std::list<Defense*> defenses, unsigned int ases, 
+		std::list<int> &selectedIDs, float mapWidth, float mapHeight, std::list<Object*> obstacles)             
+{
+    //definicion de variables necesarias
+    //creamos vector de candidatos
+    std::vector<candidato> Candidatos; 
+    //iterador para recorrer las defensas
+    std::list<Defense*>::iterator defit = defenses.begin(); 
+    
+    //No contamos el centro de extraccion ya 
+    //que este es necesario para el funcionamiento
+    //metemos la primera defensa(centro de extraccion)
+    selectedIDs.push_back((*defit)->id);
+    //pasamos a la siguiente defensa
+    defit++;
+
+
+    //bucle para inicializar la lista de candidatos
+    while(defit != defenses.end()) 
+    {   
+     	//Cada candidato tendra un puntero a la defensa y valor que tiene la misma defensa
+        Candidatos.push_back(candidato((*defit),DefenseValue(defit)));
+        defit++;//pasamos a la siguiente defensa
+    }
+    //ordenamos el vector (de menor a mayor coste)
+    std::sort(Candidatos.begin(),Candidatos.end());
+    
+
+    //utilizaremos una matriz de flotantes para poder representar la tabla de subproblemas resuletos
+    //ademas, esta debera ser de dimension 
+    //numdecandidatos(defensas) * presupuesto + 1 (con el objetivo de poder llegar al valor de ases
+    float evaluacionTotal[Candidatos.size()][ases+1]; //definicion de tabla de subproblemas
+
+	//Bucle para recorrer la tabla de subproblemas
+    for(int i = 0 ; i < Candidatos.size() ; i++)
+    {
+        for(int j = 0 ; j < ases+1 ; j++)
+        {
+        	//si estamos en la primera fila y j (presupuesto actual) es mayor o igual a 
+        	//lo que me cuesta la defensa, entonces la meto en la "mochila"
+            if(i == 0 && j >= Candidatos[i].def->cost)	
+                evaluacionTotal[i][j] = Candidatos[i].valor;
+                
+            //si estamos en la primera fila y j (presupuesto actual) es menor a
+            //lo que me cuesta la defensa, entonces no meto nada en la mochila
+            if(i == 0 && j < Candidatos[i].def->cost)
+                evaluacionTotal[i][j] = 0;
+                
+            //si estamos en una fila superior a la primera
+            if(i > 0)
+            {
+            	//si j (presupuesto actual) es menor a el coste de la defensa actual
+            	//entonces no puedo meter la defensa actual (me quedo igual que en la fila anterior)
+                if(j < Candidatos[i].def->cost)
+                    evaluacionTotal[i][j] = evaluacionTotal[i-1][j];
+                    
+                //si j (presupuesto actual) es mayor o igual a el coste de la defensa actual
+                //entonces nos quedamos con el maximo de lo que tenia antes(fila anterior) y 
+                //lo que tendria su meto en la mochila si meto la defensa actual en la mochila
+                else
+                    evaluacionTotal[i][j] = std::max(evaluacionTotal[i-1][j],
+                    evaluacionTotal[i-1][j-Candidatos[i].def->cost] + Candidatos[i].valor);
+            }
+        }
+    }
+    //el maximo valor disponible para el conjunto de defensas estaria en la ultima posicion
+    //tanto de fila y columna de la tabla de subproblemas resueltos 
+\end{lstlisting}

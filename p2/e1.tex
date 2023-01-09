@@ -1,0 +1,14 @@
+$$ f(salud,ataqueporseg,danio,dispersion,coste)= \frac{{salud}+{ataqueporseg}+{danio}+{dispersion}}{coste} $$
+
+Para realizar la funcion que dara un valor a cada defensa, deberemos tener en cuenta los atributos de esta, intentando sacar los maximos de estos en relación a su coste.
+Los atributos que dan valor a la defensa son: los ataques por segundo (attacksPerSecond), el daño (damage), la dispersion (dispersion) y la vida (health).
+El atributo que resta valor a la defensa es su coste (cost).
+Entonces haremos un promedio devolviendo la suma de los atributos que dan valor a la defensa entre su coste.
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Funcion DefenseValue}]
+float DefenseValue(std::list<Defense*>::iterator currentDef)
+{
+	return ((*currentDef)->health + (*currentDef)->attacksPerSecond + 
+	(*currentDef)->damage + (*currentDef)->dispersion)/(*currentDef)->cost;
+}
+\end{lstlisting}

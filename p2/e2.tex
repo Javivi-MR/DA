@@ -1,0 +1,6 @@
+Para representar la tabla de subproblemas resueltos, vamos a usar una matriz de flotantes de dimension numdecandidatos(defensas) * presupuesto + 1 (ases+1).
+Esto lo hacemos con el objetivo de tener una matriz que vaya guardando el maximo valor posible almacenable en la mochila.
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Estructura de datos seleccionada para la tabla de subproblemas resueltos}]
+	float evaluacionTotal[Candidatos.size()][ases+1];
+\end{lstlisting}

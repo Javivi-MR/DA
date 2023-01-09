@@ -1,0 +1,89 @@
+La función de factibilidad comprobará si una celda es factible para colocar la defensa o no. Para ello, tendremos que comprobar que no este fuera de rango, que no choque con un obstáculo o defensa ya colocada y que no salga del mapa. \\\\
+Para que la casilla no este fuera de rango, no tiene que ser menor que 0 tanto en fila como en columna y no tiene que ser mayor o igual que los extremos del tablero.\\\\
+Para que no choque con los obstáculos o defensas, la distancia entre el centro de la celda candidata y la celda del obstáculo/defensa ya colocada no debe ser menor que la suma de los radios de la defensa a colocar y el obstáculo/defensa ya colocada.\\\\
+Para que no salga la defensa del mapa tenemos que comprobar que su radio no viola los limites del mapa. Para ello si la posición de la fila o la posición de la columna menos el radio de la defensa es menor que 0 sobrepasa alguno de los extremos inferiores. Mientras que si la posición de la fila o la posición de la columna mas el radio de la defensa es mayor que la anchura o la altura del mapa, entonces sobrepasa alguno de los extremos superiores.
+
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Función de factibilidad}]
+bool EsFactible(int row, int col,List<Defense*>::iterator currentdefense
+	, int nCellsWidth, int nCellsHeight, float mapWidth, float mapHeight, 
+	List<Object*> obstacles, List<Defense*> defenses,int numDefensasColocadas)
+{
+	//definimos una variable factible, la predefinimos con true, 
+	//y si encontramos que no es factible la pondremos a false
+	bool factible = true; 
+	
+	//si la row y col de la celda pasada esta dentro de rango
+	if(row >= 0 && row < nCellsWidth && col >= 0 && col < nCellsHeight) 
+    {
+		//definicon de variables necesarias para la verificacion de la factibilidad
+		//obtenemos la posicion de la celda
+		Vector3 pos = cellCenterToPosition(row,col,mapWidth/nCellsWidth
+		,mapHeight/nCellsHeight);  
+		//definimos un iterador para la lista de obstulos inicializado con la primera posicion
+		List<Object*>::iterator poit = obstacles.begin(); 
+		//definimos un iterador para la lista de defensas inicializado con la primera posicion
+		List<Defense*>::iterator pdit = defenses.begin(); 
+
+		//Comprobamos que los obstaculos no chocan con nuestra defensa
+		//mientras que haya obstaculos por comprobar y factible sea verdadero
+		while(poit != obstacles.end() && factible)	
+		{
+			//si la suma de los radios de la defensa a colocar y el radio del obstaculo es mayor que 
+			//la distancia desde el centro de la posicion
+			//de la celda hasta el centro de la posicion del obstaculo
+			if(((*currentdefense)->radio + (*poit)->radio) > 
+			_distance(pos,(*poit)->position)) 
+				factible = false; //entonces la defensa no es colocable ya que estaria 
+				//intersectando el radio del ocbstaculo (factible es falso)
+			poit++; // pasamos al siguiente obstaculo
+		}
+		
+		//Comprobamos que las defensas YA COLOCADAS no chocan con nuestra defensa
+		//mientras que haya defensas por comprobar y factible sea verdadero
+		while(pdit != defenses.end() && factible) 
+		{
+			//si la defensa que iteramos es la que vamos a colocar o 
+			//numero de defensas colocadas es 0, no hay defensa que pueda colisionar
+			if(pdit == currentdefense || numDefensasColocadas == 0) 
+			{
+				pdit++; //pasamos a la siguiente defensa
+				continue; //terminamos la iteracion actual en el bucle
+			}
+			else
+			{
+				//si la suma del radios de la defensa a colocar 
+				//y el radio de la defensa ya colocada es mayor que 
+				//la distancia desde el centro de la posicion de la
+				//celda hasta el centro de la posicion defensa
+				if( ((*currentdefense)->radio + (*pdit)->radio) 
+				> _distance(pos,(*pdit)->position))
+					factible = false; //entonces la defensa no 
+					//es colocable ya que estaria
+				//intersectando el radio de la otra defensa (factible es falso)
+				pdit++; // pasamos a la siguiente defensa
+				numDefensasColocadas--; //hemos comprobado esta defensa, 
+				//por lo que ya no la contamos
+			}
+		}
+
+		//si la resta de la posicion x/y de la celda 
+		//menos el radio de la defensa es menor que 0
+		//o la suma de la posicion x/y de la celda 
+		//mas el radio de la defensa es mayor que
+		//la anchura o altura del mapa entonces el radio de la defensa
+		//ocupa una parte inexistente del borde del mapa
+		if(pos.x - (*currentdefense)->radio < 0 
+		|| pos.y - (*currentdefense)->radio < 0 
+		||pos.x + (*currentdefense)->radio > mapWidth 
+		|| pos.y + (*currentdefense)->radio > mapHeight)
+			factible = false; //entonces la defensa no es colocable ya que 
+			//estaria violando los bordes del mapa (factible es falso)
+	}
+	else	//Si row y col esta fuera de rango
+		factible = false; //entonces la defensa no es colocable (factible es falso)
+
+	return factible; //devolvemos la factible
+}
+
+\end{lstlisting}

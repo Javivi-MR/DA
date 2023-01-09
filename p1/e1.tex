@@ -1,0 +1,36 @@
+La función que evalúa las celdas para colocar el centro de extracción se basa en puntuar su proximidad con el centro del mapa. Las celdas mas céntricas (aquellas cuya distancia hacia el centro es menor), serán la que mayor puntuación tengan. Esto lo hacemos con el objetivo de que, a la hora de colocar las defensas, poder colocar el mayor número de estas. \\\\
+Esto lo conseguimos al usar la función ya proporcionada en el "FAQ" de la asignatura "cellCenterToPosition", la cual nos proporciona la posición central de la casilla que le pasemos. \\\\
+Con la casilla dada, la casilla mas céntrica del mapa (con fila en la mitad del máximo de la fila y columna en la mitad del máximo de columna), y la función "\_distance" (función que calcula la distancia entre dos posiciones céntricas), devolveremos 1000 entre la distancia de las posiciones (entre mas distancia, menos puntuación y lo mismo a la inversa)\\\\
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Funcion cellValueExtrationCenter}]
+float cellValueExtrationCenter(int row, int col, bool** freeCells
+,float cellWidth , float cellHeight,int nCellsWidth, int nCellsHeight)
+//Para poder evaluar cada celda en el caso de querer 
+//construir el centro de Extraccion y las defensas debemos intentar
+//crearlo lo mas cercano al centro con el objetivo 
+//de que la posicion disponible mas centrica sea el centro de 
+//extraccion para poder construir el numero maximo de defensas alrededor suya
+{
+	if(freeCells[row][col])// Comprobamos que la celda que hemos seleccionado esta libre
+	{
+		//Debemos tener en cuenta que las casillas mas centricas sera las 
+		//que mas se acerquen a la posicion formada por la celda situada en
+		//nCellsWidth/2(la mitad del ancho) en el caso de la row y a 
+		//nCellsHeight/2(la mitad de la altutra) en el caso de la col.
+		//Para poder medir la distancias entre la celda que se nos pasa 
+		//y la celda central conseguiremos sus posisciones reales
+		//gracias a la funcion proporcionada cellCenterToPosition
+		// y gracias a la funcion \_distance podemos obtener la distancia entre ambos.
+		//Por ultimo, para poder tener una ponderacion devolveremos el
+		// siguiente dato: 1000/\_distance(Centro,celdaActual) debido a que
+		//cuanto mas cercana sea la celda proporcionada, menor sera la 
+		//distancia entre ellas, por consecuente, mayor sera su puntuacion.
+		Vector3 Centro = cellCenterToPosition(nCellsWidth/2,
+		nCellsHeight/2,cellWidth,cellHeight);
+		Vector3 celdaActual = cellCenterToPosition(row,col,
+		cellWidth,cellHeight);
+		return (float) 1000/_distance(Centro,celdaActual);
+	}
+	return -1; //No esta libre
+}
+\end{lstlisting}

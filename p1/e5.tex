@@ -1,0 +1,28 @@
+La función que evalúa las celdas para colocar el resto de las defensas, va a ser bastante similar a la hecha para el centro de extracción. Los únicos cambios que haremos será: \\\\
+1. Pasar la lista de candidatos por referencia con el objetivo de poder asignar el nuevo valor a las celdas directamente.\\\\
+2. En vez de usar la distancia desde el centro de la celda hasta el centro de la celda más céntrica, usaremos el centro de la celda donde está colocado el centro de extracción.
+
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Funcion cellValueDefenses}]
+// Para poder evaluar las celdas en el caso de querer construir las defensas,
+// haremos algo similar que con el centro de extraccion
+//solo que ahora colocaremos las defensas lo mas cercano al centro de extraccion. 
+//Para ello modificaremos el valor de las celdas candidatas con el nuevo valor
+void cellValueDefenses(std::list<Celda>& Celdas,
+List<Defense*>::iterator CentroDeExtraccion, float cellWidth, float cellHeight)
+{													
+	List<Celda>::iterator cit = Celdas.begin(); //definimos iterador
+	while(cit != Celdas.end())//mientras haya celdas
+	{
+		//pasamos la celda actual a posicion
+		Vector3 celdaActual = 
+		cellCenterToPosition(cit->row,cit->col,cellWidth,cellHeight);
+		// el valor sera 100 entre la distancia de la celda actual y el centro de extraccion
+		cit->valor = 
+		(float) 1000/_distance(celdaActual,(*CentroDeExtraccion)->position);	
+		//cambiamos de celda
+		cit++;
+	}
+}
+\end{lstlisting}
+

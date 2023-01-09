@@ -1,0 +1,64 @@
+
+\begin{lstlisting}[frame=single,basicstyle=\tiny,title={Algoritmo de Fusión}]
+std::vector<Celda> fusion(std::vector<Celda>& FirstHalf,std::vector<Celda>& SecondHalf){
+
+	std::vector<Celda> Results(FirstHalf.size() + SecondHalf.size());// Vector resultado (Vector ordenado creado por la fusion entre la primera mitad y la segunda)
+	int i = 0, j = 0, k = 0;//Variables necesarias para recorrer cada vector
+	
+	
+	
+	while(i < FirstHalf.size() && j < SecondHalf.size()) //Mientras que no hayamos recorrido uno de los vectores enteros
+	{
+		if(FirstHalf[i] < SecondHalf[j]) //si la posicion i de la primera mitad es menor que la posicion j de la segunda mitad
+		{
+			Results[k] = FirstHalf[i];	//Asignamos el elemento en resultado
+			i++;//iteramos i para la primera mitad
+		}
+		else
+		{
+			Results[k] = SecondHalf[j];//Asignamos el elemento en resultado
+			j++; //iteramos j para la segunda mitad
+		}
+		k++; //iteramos k para el resultado
+	}
+	//Rellenar lo faltante de cada mitad
+	while(i < FirstHalf.size())
+	{
+		Results[k] = FirstHalf[i];
+		i++;
+		k++;
+	}
+	while(j < SecondHalf.size())
+	{
+		Results[k] = SecondHalf[j];
+		j++;
+		k++;
+	}
+	return Results;
+}
+
+
+void ordenacionFusion(std::vector<Celda>& v)
+{
+    int n = v.size()/2; //obtenemos la posicion de la mitad del vector
+    
+    if(n > 0)	//si es mayor de 0
+    {
+    	std::vector<Celda> FirstHalf(n); //creamos 2 vectores auxiliares
+    	std::vector<Celda> SecondHalf(v.size() - n);// Uno guardara la primera mitad y otro la segunda
+    	
+    	for(int i = 0; i < n; i++)	//relleno de la primera mitad
+    	{
+    		FirstHalf[i] = v[i];
+    	}
+    	
+    	for(int i = n ; i < v.size(); i++) //relleno de la segunda mitad
+    	{
+    		SecondHalf[i-n] = v[i];
+    	}
+    	ordenacionFusion(FirstHalf); //llamada recursiva con la primera mitad
+    	ordenacionFusion(SecondHalf);//llamada recursiva con la segunda mitad
+    	v = fusion(FirstHalf,SecondHalf); //llamada a funsion
+    }
+}
+\end{lstlisting}
